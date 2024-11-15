@@ -1,0 +1,11 @@
+# Ignore the _pycache_ directory
+__pycache__/
+
+# Ignore the .github directory
+.github/
+
+# Ignore specific files
+errors.txt
+works.txt
+
+venv/

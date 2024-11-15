@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div id="warbler-hero" class="full-width"></div>
+<img src="{{ user.image_url }}" alt="Profile image for {{ user.username }}" id="profile-avatar" class="img-fluid rounded-circle mb-4">
+
+<div class="container full-width">
+  <div class="row justify-content-end">
+    <div class="col-md-9">
+      <ul class="user-stats nav nav-pills mb-4">
+        <li class="nav-item stat">
+          <p class="small">Messages</p>
+          <h4>
+            <a href="{{ url_for('user_messages', user_id=user.id) }}">{{ user.messages|length }}</a>
+          </h4>
+        </li>
+        <li class="nav-item stat">
+          <p class="small">Following</p>
+          <h4>
+            <a href="{{ url_for('user_following', user_id=user.id) }}">{{ user.following|length }}</a>
+          </h4>
+        </li>
+        <li class="nav-item stat">
+          <p class="small">Followers</p>
+          <h4>
+            <a href="{{ url_for('user_followers', user_id=user.id) }}">{{ user.followers|length }}</a>
+          </h4>
+        </li>
+        <li class="nav-item stat">
+          <p class="small">Likes</p>
+          <h4>
+            <a href="{{ url_for('user_likes', user_id=user.id) }}">{{ user.likes|length }}</a>
+          </h4>
+        </li>
+        <div class="ms-auto d-flex align-items-center">
+          {% if g.user %}
+            {% if g.user.id == user.id %}
+              <a href="{{ url_for('edit_profile') }}" class="btn btn-outline-secondary me-2">Edit Profile</a>
+              <form method="POST" action="{{ url_for('delete_profile') }}" class="form-inline">
+                {{ csrf_token() }}
+                <button type="submit" class="btn btn-outline-danger" onclick="return confirm('Are you sure you want to delete your profile? This action cannot be undone.');">Delete Profile</button>
+              </form>
+            {% elif g.user.is_following(user) %}
+              <form method="POST" action="{{ url_for('stop_following', user_id=user.id) }}" class="ms-2">
+                {{ csrf_token() }}
+                <button type="submit" class="btn btn-primary">Unfollow</button>
+              </form>
+            {% else %}
+              <form method="POST" action="{{ url_for('follow', user_id=user.id) }}" class="ms-2">
+                {{ csrf_token() }}
+                <button type="submit" class="btn btn-outline-primary">Follow</button>
+              </form>
+            {% endif %}
+          {% endif %}
+        </div>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-md-3">
+    <h4 id="sidebar-username">@{{ user.username }}</h4>
+    <p>{{ user.bio }}</p>
+    {% if user.location %}
+      <p class="user-location"><span class="fa fa-map-marker"></span> {{ user.location }}</p>
+    {% endif %}
+  </div>
+
+  <div class="col-md-9">
+    {% block user_details %}
+    {% endblock %}
+  </div>
+</div>
+
+{% endblock %}
